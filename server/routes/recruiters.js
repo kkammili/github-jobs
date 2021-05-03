@@ -12,14 +12,14 @@ router.post('/add', async (req, res, next) => {
     })
 });
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
     pool.query('SELECT * FROM recruiters;', (q_err, q_succ) => {
         if (q_err) return next(q_err)
         res.json(q_succ.rows)
     })
 })
 
-router.put('/statUpdate', (req, res) => {
+router.put('/statUpdate', (req, res, next) => {
     const values = [req.body.status, req.body.id]
     pool.query(`UPDATE recruiters SET current_status = $1 WHERE id = $2;`, values, (q_err, q_succ) => {
         if (q_err) return next(q_err)
@@ -27,7 +27,7 @@ router.put('/statUpdate', (req, res) => {
     })
 })
 
-router.delete('/recruiter/:id', (req, res) => {
+router.delete('/recruiter/:id', (req, res, next) => {
     const values = [req.params.id]
     pool.query(`DELETE FROM recruiters
     WHERE id = $1;`, values, (q_err, q_succ) => {

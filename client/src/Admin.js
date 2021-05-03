@@ -3,9 +3,9 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import axios from './axios'
-import UpdateDelete from './UpdateDelete'
 import DelBtnCellRenderer from './DelBtnCellRenderer'
 import { toast } from 'toast-notification-alert'
+import { FaSyncAlt } from "react-icons/fa";
 
 class Admin extends React.Component {
     constructor(props) {
@@ -50,9 +50,6 @@ class Admin extends React.Component {
 
     componentDidMount() {
         this.fetchRecruiters()
-        setInterval(() => {
-            this.fetchRecruiters()
-        }, 20000)
     }
     render() {
         return (
@@ -60,18 +57,48 @@ class Admin extends React.Component {
                 <div className='container-fluid'>
                     <div style={{ display: 'flex', justifyContent: 'center', padding: '3vh 0 2vh 0' }}>
                         <h3 className='text-success'>View and Edit interview status</h3>
+                        <FaSyncAlt
+                            style={{ display: 'block', 'position': 'relative', top: '10px', left: '10px' }}
+                            onClick={() => {
+                                this.gridApi.sizeColumnsToFit()
+                                this.fetchRecruiters()
+                            }}
+                            size={'1em'}
+                        />
                     </div>
                     <div className='row'>
-                        <div className="ag-theme-alpine col-9" style={{ height: '85vh' }}>
+                        <div className="ag-theme-alpine col-12" style={{ height: '85vh' }}>
                             <AgGridReact
                                 rowData={this.state.rowData}
-                                defaultColDef={{ resizable: true }}
+                                defaultColDef={{
+                                    resizable: true,
+                                    stopEditingWhenGridLosesFocus: true,
+                                    onCellValueChanged: (event) => {
+                                        const status = event.newValue
+                                        const id = event.data.id
+                                        if (id && status) {
+                                            axios.put('recruiters/statUpdate', { id, status }).then(res => {
+                                                if (res.status === 200) {
+                                                    toast.show({ title: 'Successfully updated job details', position: 'topright', type: 'success' })
+                                                    this.fetchRecruiters()
+                                                }
+                                            }).catch((err) => {
+                                                toast.show({ title: 'Something went wrong!!', position: 'topright', type: 'error' })
+                                            })
+                                        }
+                                    }
+                                }}
                                 onGridReady={this.onGridReady}
                                 frameworkComponents={{ 'delBtnCellRenderer': DelBtnCellRenderer }}
                             >
                                 {this.state.rowDataKeys.map(eachKey => {
                                     return (
-                                        <AgGridColumn key={eachKey} field={eachKey}></AgGridColumn>
+                                        <AgGridColumn
+                                            key={eachKey}
+                                            editable={eachKey === 'current_status' ? true : false}
+                                            field={eachKey}
+                                            filter={true}
+                                        ></AgGridColumn>
                                     )
                                 })}
                                 <AgGridColumn
@@ -82,9 +109,6 @@ class Admin extends React.Component {
                                     cellRendererParams={{ deleteRecruiter: this.deleteRecruiter }}
                                 ></AgGridColumn>
                             </AgGridReact>
-                        </div>
-                        <div className='col-3'>
-                            <UpdateDelete fetchRecruiters={this.fetchRecruiters} gridApi={this.gridApi} />
                         </div>
                     </div>
                 </div>
