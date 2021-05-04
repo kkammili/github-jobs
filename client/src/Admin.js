@@ -24,7 +24,7 @@ class Admin extends React.Component {
     }
 
     fetchRecruiters = () => {
-        axios.get('recruiters').then(res => {
+        axios.get('recruiters/').then(res => {
             this.setState({
                 rowData: res.data
             })
