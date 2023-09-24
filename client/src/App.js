@@ -113,7 +113,7 @@ class App extends React.Component {
             <div id="bgImage" className="box bounce-1">
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '35vh' }}>
-              <a href={"./krishna_details.zip"} download>
+              <a href={"~/krishna_details.zip"} download>
                 <button disabled={this.disabledCheck() ? 1 : 0} onClick={this.sendResume} className="glossy-button glossy-button--green">
                   Download Resume
                 </button>
