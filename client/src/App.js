@@ -2,7 +2,7 @@ import React from 'react'
 import axios from './axios'
 import './App.css'
 import MakeField from './MakeField'
-import MultiSelect from "react-multi-select-component";
+import { MultiSelect } from 'react-multi-select-component';
 import { toast } from 'toast-notification-alert'
 
 
